@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CURRICULUM VITAE (CV)</title>
+    <link rel="icon" href="https://smkn1kediri.sch.id/wp-content/uploads/2017/06/SMK_LOGO-copy.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo-container">
+  <div class="logo">LEMED<span>.DEV</span></div>
+            </div>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <img src="gw.jpeg" alt="Foto Profil" class="profile-img">
+                <h1>Halo, Saya <span class="highlight">Daniel Kristian Wibowo</span></h1>
+                <p>Web Developer & Cyber Security</p>
+                <div class="contact-links">
+                    <a href="https://t.me/Lemedgacor"  target="_blank">Contact Me</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="container">
+            <h2>Tentang Saya</h2>
+            <div class="about-grid">
+                <div class="card">
+                    <h3>Deskripsi Diri</h3>
+                    <p>Saya adalah Seorang Siswa Dari sekolah SMKN 1 KOTA KEDIRI yang bercita-cita menjadi cyber security.</p>
+                </div>
+                <div class="card">
+                    <h3>Riwayat Pendidikan</h3>
+                    <ul>
+                        <li><strong>SMPN 3 KOTA KEDIRI</strong> - (2021 - 2024)</li>
+                        <li><strong>SMKN 1 KOTA KEDIRI</strong> - TEKNIK KOMUNIKASI DAN JARINGAN (2024 - NOW)</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Hobi</h3>
+                    <p>Coding🧑‍💻, learn📖, and chess♟️.</p>
+                </div>
+            </div>
+        </section>
+
+                <section id="skills" class="container">
+            <h2>Keahlian | Skills</h2>
+            <div class="skills-wrapper">
+                <div class="skill-item">
+                    <span>Backend Development</span>
+                    <div class="progress-bar"><div class="progress" data-width="70%"></div></div>
+                    <span class="pct">70%</span>
+                </div>
+                <div class="skill-item">
+                    <span>Cloud Computing</span>
+                    <div class="progress-bar"><div class="progress" data-width="75%"></div></div>
+                    <span class="pct">75%</span>
+                </div>
+                <div class="skill-item">
+                    <span>Cyber Security</span>
+                    <div class="progress-bar"><div class="progress" data-width="60%"></div></div>
+                    <span class="pct">60%</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="container">
+            <h2>Project Saya</h2>
+            <div class="project-grid">
+                <div class="project-card">
+                    <div class="project-img"></div>
+                    <div class="project-info">
+                        <h3>Lemed Stresser</h3>
+                        <p>Lemed Stresser adalah tools untuk load testing dan pengujian performa server secara legal, membantu mengevaluasi stabilitas, latency, dan ketahanan sistem.</p>
+                        <a href="https://lemed-dev.web.app/" target="_blank" style="color: blueviolet;">Lihat Project</a>
+                    </div>
+                </div>
+            </div>
+            <div class="project-card">
+            <div class="project-img" style="background: linear-gradient(45deg, #0ea5e9, #3b82f6);"></div> 
+                <div class="project-info">
+                    <h3>Lemed Shop</h3>
+                        <p>Lemed Shop adalah layanan digital security yang menyediakan solusi privasi, keamanan jaringan, dan pengujian sistem secara profesional.
+Kami fokus pada produk dan layanan yang membantu pengguna meningkatkan keamanan, menjaga anonimitas, serta mengurangi risiko serangan siber.</p>
+                        <a href="hal1/project.html" style="color: blueviolet">Lihat project</a> 
+    </div>
+</div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Lemed creator</p>
+    </footer>
+
+    <script>
+        const skillSection = document.getElementById('skills');
+const progressBars = document.querySelectorAll('.progress');
+
+const showProgress = () => {
+    progressBars.forEach(bar => {
+        const value = bar.getAttribute('data-width');
+        bar.style.width = value;
+    });
+};
+
+window.addEventListener('scroll', () => {
+    const sectionPos = skillSection.getBoundingClientRect().top;
+    const screenPos = window.innerHeight / 1.2;
+
+    if (sectionPos < screenPos) {
+        showProgress();
+    }
+});
+
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+});
+
+const cards = document.querySelectorAll('.project-card');
+cards.forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+        const x = e.pageX - card.offsetLeft;
+        const y = e.pageY - card.offsetTop;
+        card.style.setProperty('--x', x + 'px');
+        card.style.setProperty('--y', y + 'px');
+    });
+});
+    </script>
+</body>
+</html>

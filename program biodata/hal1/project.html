@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LEMED SHOP - ULTIMATE</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'crt-white': '#c8c8b0',
+                        'crt-black': '#050505',
+                        'crt-green': '#1b5e20', 
+                        'crt-green-bright': '#33ff00',
+                    },
+                    fontFamily: {
+                        'vt': ['"VT323"', 'monospace'],
+                        'tech': ['"Share Tech Mono"', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+
+    <style>
+        /* --- CORE --- */
+        body {
+            background-color: #050505;
+            height: 100vh; width: 100vw; margin: 0;
+            overflow: hidden; display: flex; justify-content: center; align-items: center;
+            touch-action: none;
+        }
+
+        /* --- TV CHASSIS --- */
+        .tv-set {
+            position: relative;
+            background: #1a1a1a;
+            border-radius: 20px;
+            width: 600px; height: 500px; padding: 25px;
+            border-bottom: 12px solid #0f0f0f;
+            box-shadow: 0 0 0 2px #333, 0 20px 50px rgba(0,0,0,0.8);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .tv-set {
+                width: 95vw; height: 92vh;
+                padding: 12px; border-radius: 18px; border-bottom: 8px solid #0f0f0f;
+            }
+        }
+
+        /* --- SCREEN --- */
+        .screen-glass {
+            position: relative; width: 100%; height: 100%;
+            background: #000; overflow: hidden;
+            border-radius: 50% / 10%;
+            border-top-left-radius: 12px; border-top-right-radius: 12px;
+            border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.95);
+            z-index: 10;
+        }
+
+        .glass-glare {
+            position: absolute; inset: 0; z-index: 50; pointer-events: none;
+            background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08) 0%, transparent 25%);
+        }
+
+        /* --- CONTENT --- */
+        .crt-content {
+            width: 100%; height: 100%;
+            background-color: #c8c8b0;
+            padding: 1rem; color: #111;
+            opacity: 0; overflow-y: auto;
+            position: relative; z-index: 5;
+            -webkit-overflow-scrolling: touch;
+            transform: scale(0.96); transform-origin: center;
+            scroll-behavior: smooth;
+        }
+        .crt-content::-webkit-scrollbar { width: 3px; }
+        .crt-content::-webkit-scrollbar-track { background: transparent; }
+        .crt-content::-webkit-scrollbar-thumb { background: #1b5e20; }
+
+        /* --- COMPONENTS --- */
+        .nav-btn {
+            background: transparent; border: 1px solid #000;
+            font-family: 'Share Tech Mono'; font-size: 10px; font-weight: bold;
+            padding: 5px; text-align: center; cursor: pointer; transition: 0.1s;
+        }
+        .nav-btn:hover, .nav-btn:active {
+            background: #000; color: #fff;
+        }
+
+        .section-header {
+            font-family: 'VT323'; font-size: 1.5rem;
+            border-bottom: 2px solid #000; margin-top: 1.5rem; margin-bottom: 0.5rem;
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+        
+        .product-card {
+            display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid #333; padding: 10px; margin-bottom: 8px;
+            background: rgba(255,255,255,0.4); transition: 0.1s; cursor: pointer;
+        }
+        .product-card:active { background: #000; color: #fff; transform: scale(0.98); }
+        .product-card:active .tag { background: #fff; color: #000; }
+        .product-card:active .price { color: #33ff00; }
+
+        .tag { font-size: 9px; padding: 2px 4px; font-weight: bold; font-family: sans-serif; }
+        .tag-soft { background: #1b5e20; color: #fff; }
+        .tag-hard { background: #8B0000; color: #fff; }
+        .tag-serv { background: #00008B; color: #fff; }
+
+        /* --- MODAL PAYMENT --- */
+        .modal-overlay {
+            position: absolute; inset: 0;
+            background: rgba(0,0,0,0.9); z-index: 100; display: none;
+            justify-content: center; align-items: center; backdrop-filter: blur(2px);
+        }
+        .payment-option {
+            border: 1px solid #000; padding: 8px; margin-bottom: 5px;
+            text-align: left; font-family: 'Share Tech Mono'; font-size: 12px;
+            cursor: pointer; display: flex; justify-content: space-between;
+        }
+        .payment-option.selected { background: #000; color: #33ff00; border-color: #33ff00; }
+
+        /* --- CONTROLS --- */
+        .power-btn {
+            position: absolute; bottom: 10px; right: 20px; z-index: 60;
+            width: 45px; height: 45px; background: #222; border-radius: 50%;
+            border: 2px solid #000; box-shadow: inset 1px 1px 2px #555, 2px 2px 5px #000;
+            display: flex; justify-content: center; align-items: center; cursor: pointer;
+        }
+        .power-btn:active { transform: scale(0.95); background: #111; box-shadow: inset 2px 2px 5px #000; }
+
+        /* SCANLINES */
+        .scanlines {
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+            background-size: 100% 4px; position: absolute; inset: 0; z-index: 40; pointer-events: none; opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="tv-set">
+        
+        <div class="absolute top-2 left-1/2 transform -translate-x-1/2 text-gray-600 font-bold tracking-[0.3em] text-[10px] z-20">
+            LEMED POCKET
+        </div>
+
+        <div class="screen-glass">
+            <div class="glass-glare"></div>
+            <div class="scanlines"></div>
+            <div id="startupFlash" class="absolute top-1/2 left-1/2 w-0 h-[2px] bg-white z-50 shadow-[0_0_20px_#fff] opacity-0 -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+
+            <div id="screenContent" class="crt-content">
+                
+                <div class="flex justify-between items-end border-b-2 border-black pb-2 mb-2 sticky top-0 bg-[#c8c8b0] z-30 pt-1">
+                    <h1 class="font-vt text-4xl leading-none">LEMED<span class="text-crt-green">SHOP</span></h1>
+                    <div class="text-right">
+                        <div class="font-tech text-[10px] bg-black text-white px-1 animate-pulse">● LIVE</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-4 gap-1 mb-4 sticky top-[50px] bg-[#c8c8b0] z-20 pb-2 border-b border-black border-dashed">
+                    <button onclick="scrollToId('soft')" class="nav-btn">SOFT</button>
+                    <button onclick="scrollToId('hard')" class="nav-btn">HARD</button>
+                    <button onclick="scrollToId('serv')" class="nav-btn">SERV</button>
+                    <button onclick="scrollToId('uplink')" class="nav-btn bg-black text-white">MSG</button>
+                </div>
+
+                <div id="soft" class="section-header">
+                    <span>:: SOFTWARE ::</span>
+                    <span class="text-xs font-tech">[DIGITAL]</span>
+                </div>
+                
+                <div class="product-card" onclick="openPayment('Lemed VPN PREMIUM', 50000)">
+                    <div>
+                        <div class="font-bold font-tech text-sm">Lemed VPN (1 MONTH)</div>
+                        <span class="tag tag-soft">ANONYMITY</span>
+                    </div>
+                    <div class="font-vt text-xl price">50K</div>
+                </div>
+
+                <div class="product-card" onclick="openPayment('PHISHING KIT v4', 150000)">
+                    <div>
+                        <div class="font-bold font-tech text-sm">PHISHING KIT v4</div>
+                        <span class="tag tag-soft">SOCIAL ENG</span>
+                    </div>
+                    <div class="font-vt text-xl price">150K</div>
+                </div>
+
+                <div id="hard" class="section-header">
+                    <span>:: HARDWARE ::</span>
+                    <span class="text-xs font-tech">[PHYSICAL]</span>
+                </div>
+
+                <div class="product-card" onclick="openPayment('WIFI DEAUTHER', 250000)">
+                    <div>
+                        <div class="font-bold font-tech text-sm">ESP8266 DEAUTHER</div>
+                        <span class="tag tag-hard">JAMMER</span>
+                    </div>
+                    <div class="font-vt text-xl price">250K</div>
+                </div>
+
+                <div class="product-card" onclick="openPayment('RUBBER DUCKY', 600000)">
+                    <div>
+                        <div class="font-bold font-tech text-sm">USB RUBBER DUCKY</div>
+                        <span class="tag tag-hard">INJECTOR</span>
+                    </div>
+                    <div class="font-vt text-xl price">600K</div>
+                </div>
+
+                <div class="product-card" onclick="openPayment('FLIPPER ZERO', 2500000)">
+                    <div>
+                        <div class="font-bold font-tech text-sm">FLIPPER ZERO</div>
+                        <span class="tag tag-hard">MULTI-TOOL</span>
+                    </div>
+                    <div class="font-vt text-xl price">2.5JT</div>
+                </div>
+
+                <div id="serv" class="section-header">
+                    <span>:: SERVICES ::</span>
+                    <span class="text-xs font-tech">[HIRE]</span>
+                </div>
+
+                <div class="product-card" onclick="openPayment('WEB PENTEST', 1000000)">
+                    <div>
+                        <div class="font-bold font-tech text-sm">WEB PENTEST</div>
+                        <span class="tag tag-serv">AUDIT</span>
+                    </div>
+                    <div class="font-vt text-xl price">1JT+</div>
+                </div>
+
+                <div id="uplink" class="mt-12 mb-8">
+                    <div class="section-header">
+                        <span>:: UPLINK ::</span>
+                        <span class="text-xs font-tech">[CONTACT]</span>
+                    </div>
+                    <form class="border border-black p-3 bg-white/30" onsubmit="event.preventDefault(); alert('TRANSMISSION SENT.');">
+                        <div class="mb-2">
+                            <label class="font-tech text-[10px] font-bold">CODENAME / EMAIL</label>
+                            <input type="text" class="w-full bg-transparent border-b border-black font-tech text-sm p-1 focus:outline-none focus:border-crt-green">
+                        </div>
+                        <div class="mb-3">
+                            <label class="font-tech text-[10px] font-bold">MESSAGE PAYLOAD</label>
+                            <textarea rows="3" class="w-full bg-transparent border border-black font-tech text-sm p-1 focus:outline-none focus:border-crt-green"></textarea>
+                        </div>
+                        <button class="w-full bg-black text-white font-tech py-2 text-sm hover:bg-crt-green transition">TRANSMIT DATA</button>
+                    </form>
+                </div>
+
+                <div class="h-10"></div> </div>
+
+            <div id="statusBar" class="absolute bottom-0 w-full bg-[#111] text-[#999] text-[10px] px-2 py-1 flex justify-between font-tech z-20 opacity-0">
+                <span id="connStatus" class="text-crt-green-bright">CONN: SECURE</span>
+                <span id="clock">00:00</span>
+            </div>
+
+            <div id="paymentModal" class="modal-overlay" onclick="closePayment()">
+                <div class="bg-[#c8c8b0] w-[85%] border-2 border-black shadow-[8px_8px_0_#000] p-1" onclick="event.stopPropagation()">
+                    <div class="bg-black text-white font-tech text-xs p-2 mb-2 flex justify-between">
+                        <span>PAYMENT METHOD.EXE</span>
+                        <span class="cursor-pointer" onclick="closePayment()">[X]</span>
+                    </div>
+                    <div class="p-2">
+                        <div class="border-b border-black border-dashed pb-2 mb-3">
+                            <p class="font-tech text-xs text-gray-600">ITEM:</p>
+                            <h2 id="modalItemName" class="font-vt text-2xl leading-none">ITEM NAME</h2>
+                            <p id="modalItemPrice" class="font-bold font-tech text-lg text-crt-green">Rp 0</p>
+                        </div>
+                        <p class="font-tech text-xs mb-2 font-bold">SELECT PROTOCOL:</p>
+                        <div class="payment-option" onclick="selectPayment(this)"><span>[QRIS] GHOST QR</span><span>IDR</span></div>
+                        <div class="payment-option" onclick="selectPayment(this)"><span>[DANA] ANON WALLET</span><span>IDR</span></div>
+                        <div class="payment-option" onclick="selectPayment(this)"><span>[XMR] MONERO</span><span>CRYPTO</span></div>
+                        <button onclick="processTransaction()" class="w-full bg-black text-white font-tech py-3 mt-2 hover:bg-crt-green transition">INITIATE TRANSFER</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <button class="power-btn" onclick="togglePower()">
+            <div id="pwrLed" class="absolute top-[-5px] right-[-5px] w-2 h-2 rounded-full bg-[#300] transition-all"></div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
+        </button>
+
+    </div>
+
+    <script>
+        let isPowerOn = false;
+        
+        // --- ASSETS SUARA (Online URLs) ---
+        // Suara TV Nyala (Klik + Dengung)
+        const sfxOn = new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_736881267b.mp3'); 
+        // Suara TV Mati (Klik + Senyap)
+        const sfxOff = new Audio('https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8a73467.mp3'); 
+        
+        // Atur Volume agar tidak kaget (50%)
+        sfxOn.volume = 0.5;
+        sfxOff.volume = 0.5;
+
+        // --- DOM ELEMENTS ---
+        const screenContent = document.getElementById('screenContent');
+        const statusBar = document.getElementById('statusBar');
+        const pwrLed = document.getElementById('pwrLed');
+        const flash = document.getElementById('startupFlash');
+
+        // --- 1. POWER LOGIC ---
+        function togglePower() {
+            const tl = gsap.timeline();
+
+            if (!isPowerOn) {
+                // NYALAKAN
+                isPowerOn = true;
+                
+                // Mainkan Suara
+                sfxOn.currentTime = 0; // Reset suara ke awal
+                sfxOn.play().catch(e => console.log("Audio play blocked by browser policy")); 
+
+                // LED Merah Terang
+                pwrLed.style.backgroundColor = '#ff0000';
+                pwrLed.style.boxShadow = '0 0 8px #ff0000';
+                
+                // Animasi Flash TV Nyala
+                tl.set(flash, { opacity: 1, width: '0%', height: '2px' })
+                  .to(flash, { width: '100%', duration: 0.2, ease: "power2.out" })
+                  .to(flash, { height: '100%', duration: 0.2, ease: "power2.out" })
+                  .to(flash, { opacity: 0, duration: 0.1 });
+                
+                tl.to([screenContent, statusBar], { opacity: 1, duration: 0.2 });
+
+            } else {
+                // MATIKAN
+                isPowerOn = false;
+
+                // Mainkan Suara
+                sfxOff.currentTime = 0;
+                sfxOff.play().catch(e => console.log("Audio play blocked"));
+
+                // LED Redup
+                pwrLed.style.backgroundColor = '#300';
+                pwrLed.style.boxShadow = 'none';
+                
+                // Animasi TV Mati
+                tl.to([screenContent, statusBar], { opacity: 0, duration: 0.1 })
+                  .set(flash, { opacity: 1, width: '100%', height: '100%' })
+                  .to(flash, { height: '2px', duration: 0.15, ease: "expo.in" })
+                  .to(flash, { width: '0%', duration: 0.15, ease: "expo.in" })
+                  .to(flash, { opacity: 0 });
+            }
+        }
+
+        // --- 2. NAVIGASI (Scroll Fix) ---
+        function scrollToId(id) {
+            const container = document.getElementById('screenContent');
+            const target = document.getElementById(id);
+            if(target && container) {
+                // Offset 130px (Header + Navbar + Sedikit napas)
+                const headerOffset = 130; 
+                const targetPosition = target.offsetTop;
+                container.scrollTo({
+                    top: targetPosition - headerOffset, 
+                    behavior: "smooth"
+                });
+            }
+        }
+
+        // --- 3. PAYMENT LOGIC ---
+        function openPayment(item, price) {
+            const modal = document.getElementById('paymentModal');
+            document.getElementById('modalItemName').innerText = item;
+            document.getElementById('modalItemPrice').innerText = "Rp " + price.toLocaleString('id-ID');
+            modal.style.display = 'flex';
+            gsap.fromTo(modal.children[0], { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.2, ease: "back.out(1.7)" });
+        }
+
+        function closePayment() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+        function selectPayment(el) {
+            document.querySelectorAll('.payment-option').forEach(e => {
+                e.classList.remove('selected');
+                e.style.backgroundColor = 'transparent';
+                e.style.color = 'inherit';
+            });
+            el.classList.add('selected');
+            el.style.backgroundColor = '#000';
+            el.style.color = '#33ff00';
+        }
+
+        function processTransaction() {
+            const selected = document.querySelector('.payment-option.selected');
+            if(!selected) { alert("ERROR: SELECT PAYMENT PROTOCOL FIRST."); return; }
+            
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = "ENCRYPTING TRANSACTION...";
+            btn.style.backgroundColor = "#33ff00";
+            btn.style.color = "#000";
+
+            setTimeout(() => {
+                alert("PAYMENT SUCCESSFUL. INVOICE SENT.");
+                closePayment();
+                btn.innerText = originalText;
+                btn.style.backgroundColor = "#000";
+                btn.style.color = "#fff";
+            }, 1500);
+        }
+
+        // --- 4. CLOCK ---
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
+        }, 1000);
+
+        // Auto Start (Hanya visual, suara butuh klik user pertama kali)
+        setTimeout(() => {
+            // Kita panggil fungsi togglePower, tapi browser biasanya memblokir suara autoplay
+            // Jadi suara mungkin baru muncul saat Anda klik tombol manual.
+            if(!isPowerOn) togglePower(); 
+        }, 500);
+    </script>
+</body>
+</html>
